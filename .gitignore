@@ -1,0 +1,10 @@
+# nix
+result
+
+# nim
+nimcache/
+nimblecache/
+htmldocs/
+
+# general
+.direnv
