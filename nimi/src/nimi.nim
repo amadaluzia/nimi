@@ -6,9 +6,7 @@ import std/envvars
 import std/paths
 import std/files
 
-type NiriSocket = object
-  path: Path
-  socket: Socket
+type NiriSocket = Socket
 
 proc getNiriSocket*(): NiriSocket =
   ## Creates a `NiriSocket` for interaction with the Niri IPC.
@@ -23,10 +21,7 @@ proc getNiriSocket*(): NiriSocket =
   )
 
   connectUnix(res, niri_socket.string)
-  return NiriSocket(
-    path: niri_socket,
-    socket: res,
-  )
+  return NiriSocket(res)
 
 proc getWorkspaces*(socket: NiriSocket): seq[Workspace] =
   ## WIP: This function is useless right now.
