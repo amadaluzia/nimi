@@ -8,3 +8,4 @@ htmldocs/
 
 # general
 .direnv
+.null-ls_*
