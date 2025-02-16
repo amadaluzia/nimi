@@ -32,6 +32,6 @@ proc getWindows(socket: NiriSocket): seq[Window] =
   var windows: seq[Window] = @[]
   return windows
 
-proc getOutputss(socket: NiriSocket): seq[Outputs] =
-  var outputs: seq[Outputs] = @[]
+proc getOutputss(socket: NiriSocket): seq[Output] =
+  var outputs: seq[Output] = @[]
   return outputs
