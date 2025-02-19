@@ -1,48 +1,18 @@
-import nimi/workspace
-import nimi/window
-import nimi/output
-import std/net
-import std/envvars
-import std/paths
-import std/files
+import std/[net, json, syncio]
 
-type NiriSocket = Socket
+type NiriError* = object of CatchableError ## \
+  ## Returns whenever Niri recieves an error.
 
-proc getNiriSocket*(): NiriSocket =
-  ## Creates a `NiriSocket` for interaction with the Niri IPC.
+proc getEvery*[T](niriMsg: string): seq[T] =
+  ## Returns a sequence of `T` from
+  ## `niriMsg` assuming it's parsable
+  ##  in JSON.
   ##
-  ## This also makes sure $NIRI_SOCKET is a valid path.
-  var res: Socket = newSocket()
-  var niri_socket: Path = Path(getEnv("NIRI_SOCKET"))
-
-  assert(
-    niri_socket.fileExists(),
-    "Nothing useful found in $NIRI_SOCKET, are you sure you are running Niri?"
-  )
-
-  connectUnix(res, niri_socket.string)
-  return NiriSocket(res)
-
-proc getWorkspaces*(socket: NiriSocket): seq[Workspace] =
-  ## WIP: This function is useless right now.
-  ##
-  ## This function should use the Niri IPC to find
-  ## active Niri workspaces.
-  var workspaces: seq[Workspace] = @[]
-  return workspaces
-
-proc getWindows*(socket: NiriSocket): seq[Window] =
-  ## WIP: This function is useless right now.
-  ##
-  ## This function should use the Niri IPC to find
-  ## active Niri windows.
-  var windows: seq[Window] = @[]
-  return windows
-
-proc getOutputs*(socket: NiriSocket): seq[Output] =
-  ## WIP: This function is useless right now.
-  ##
-  ## This function should use the Niri IPC to find
-  ## active Niri outputs.
-  var outputs: seq[Output] = @[]
-  return outputs
+  ## If an error is caught, an empty
+  ## sequence will be returned.
+  try:
+    result = parseJson(niriMsg).to(seq[T])
+  except CatchableError as e:
+    stderr.writeLine(e.msg)
+    stderr.flushFile
+    result = @[]
