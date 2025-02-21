@@ -1,18 +1,18 @@
-import std/[net, json, syncio]
+import std/json
+import nimi/[output, window, workspace]
 
-type NiriError* = object of CatchableError ## \
-  ## Returns whenever Niri recieves an error.
+type NiriMsg = distinct string
 
-proc getEvery*[T](niriMsg: string): seq[T] =
-  ## Returns a sequence of `T` from
-  ## `niriMsg` assuming it's parsable
-  ##  in JSON.
-  ##
-  ## If an error is caught, an empty
-  ## sequence will be returned.
-  try:
-    result = parseJson(niriMsg).to(seq[T])
-  except CatchableError as e:
-    stderr.writeLine(e.msg)
-    stderr.flushFile
-    result = @[]
+type Niri* = object
+  outputs*: seq[Output]
+  windows*: seq[Window]
+  workspaces*: seq[Workspace]
+
+proc parseJson*(buffer: NiriMsg): JsonNode {.borrow.}
+
+proc getNiri*(outputs: NiriMsg, windows: NiriMsg, workspaces: NiriMsg): Niri =
+  result = Niri(
+    outputs: parseJson(outputs).to(seq[Output]),
+    windows: parseJson(windows).to(seq[Window]),
+    workspaces: parseJson(workspaces).to(seq[Workspace])
+  )
